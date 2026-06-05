@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>身高体重 BMI 计算 Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #eef4ff, #f8fbff);
+      color: #1f2937;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 880px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(30, 64, 175, 0.12);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 34px 36px;
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      color: white;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: 0.92;
+      line-height: 1.7;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      padding: 32px 36px 36px;
+    }
+
+    .panel {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 24px;
+      background: #fbfdff;
+    }
+
+    .panel h2 {
+      margin: 0 0 18px;
+      font-size: 20px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 16px;
+      outline: none;
+      background: white;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .primary {
+      flex: 1;
+      background: #2563eb;
+      color: white;
+    }
+
+    .primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .secondary:hover {
+      background: #d1d5db;
+    }
+
+    .samples {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sample-btn {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 13px;
+    }
+
+    .result-card {
+      min-height: 314px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .bmi-number {
+      font-size: 56px;
+      font-weight: 800;
+      color: #2563eb;
+      margin: 8px 0;
+    }
+
+    .status {
+      display: inline-block;
+      margin: 8px auto 18px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .bar {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 16px 0 12px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #60a5fa, #2563eb);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .tip {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #f3f4f6;
+      color: #4b5563;
+      line-height: 1.7;
+      text-align: left;
+    }
+
+    .formula {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 14px;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .error {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #fee2e2;
+      color: #991b1b;
+      font-size: 14px;
+    }
+
+    @media (max-width: 760px) {
+      .content {
+        grid-template-columns: 1fr;
+        padding: 24px;
+      }
+
+      .hero {
+        padding: 28px 24px;
+      }
+
+      .hero h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <h1>身高体重 BMI 计算 Demo</h1>
+      <p>输入身高和体重，一键计算 BMI，并显示成人 BMI 参考分类与建议体重范围。</p>
+    </section>
+
+    <section class="content">
+      <div class="panel">
+        <h2>输入信息</h2>
+
+        <div class="field">
+          <label for="height">身高（cm）</label>
+          <input id="height" type="number" placeholder="例如：170" min="80" max="230" />
+        </div>
+
+        <div class="field">
+          <label for="weight">体重（kg）</label>
+          <input id="weight" type="number" placeholder="例如：65" min="20" max="250" />
+        </div>
+
+        <div class="actions">
+          <button class="primary" onclick="calculateBMI()">计算 BMI</button>
+          <button class="secondary" onclick="resetForm()">清空</button>
+        </div>
+
+        <div class="samples">
+          <button class="sample-btn" onclick="fillSample(160, 50)">160cm / 50kg</button>
+          <button class="sample-btn" onclick="fillSample(170, 65)">170cm / 65kg</button>
+          <button class="sample-btn" onclick="fillSample(180, 85)">180cm / 85kg</button>
+        </div>
+
+        <div id="error" class="error">请输入合理的身高和体重。</div>
+
+        <div class="formula">
+          计算公式：BMI = 体重 kg ÷ 身高 m²<br />
+          示例：65kg ÷ 1.70² ≈ 22.5
+        </div>
+      </div>
+
+      <div class="panel result-card">
+        <h2>计算结果</h2>
+        <div id="bmiNumber" class="bmi-number">--</div>
+        <div id="status" class="status">等待输入</div>
+
+        <div class="bar">
+          <div id="barFill" class="bar-fill"></div>
+        </div>
+
+        <div id="tip" class="tip">
+          请输入身高和体重后点击“计算 BMI”。结果仅作为健康参考，不作为医学诊断。
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function calculateBMI() {
+      const heightInput = document.getElementById("height");
+      const weightInput = document.getElementById("weight");
+      const error = document.getElementById("error");
+
+      const heightCm = Number(heightInput.value);
+      const weightKg = Number(weightInput.value);
+
+      if (!heightCm || !weightKg || heightCm < 80 || heightCm > 230 || weightKg < 20 || weightKg > 250) {
+        error.style.display = "block";
+        return;
+      }
+
+      error.style.display = "none";
+
+      const heightM = heightCm / 100;
+      const bmi = weightKg / (heightM * heightM);
+      const bmiValue = bmi.toFixed(1);
+
+      let status = "";
+      let tip = "";
+
+      // 中国成人常用 BMI 参考：<18.5 偏瘦，18.5-23.9 正常，24-27.9 超重，>=28 肥胖
+      if (bmi < 18.5) {
+        status = "偏瘦";
+        tip = "BMI 偏低。可以关注饮食均衡、蛋白质摄入和规律运动。";
+      } else if (bmi < 24) {
+        status = "正常";
+        tip = "BMI 在正常范围内。建议继续保持规律作息、均衡饮食和适量运动。";
+      } else if (bmi < 28) {
+        status = "超重";
+        tip = "BMI 略高。可以适当增加运动频率，并注意控制高油、高糖食物摄入。";
+      } else {
+        status = "肥胖";
+        tip = "BMI 较高。建议关注生活方式管理，如有需要可咨询专业医生或营养师。";
+      }
+
+      const minWeight = 18.5 * heightM * heightM;
+      const maxWeight = 23.9 * heightM * heightM;
+      const progress = Math.min(Math.max((bmi / 35) * 100, 4), 100);
+
+      document.getElementById("bmiNumber").textContent = bmiValue;
+      document.getElementById("status").textContent = status;
+      document.getElementById("barFill").style.width = progress + "%";
+      document.getElementById("tip").innerHTML = `
+        <strong>结果说明：</strong>${tip}<br />
+        <strong>按当前身高参考的正常体重范围：</strong>${minWeight.toFixed(1)}kg - ${maxWeight.toFixed(1)}kg
+      `;
+    }
+
+    function resetForm() {
+      document.getElementById("height").value = "";
+      document.getElementById("weight").value = "";
+      document.getElementById("bmiNumber").textContent = "--";
+      document.getElementById("status").textContent = "等待输入";
+      document.getElementById("barFill").style.width = "0%";
+      document.getElementById("tip").textContent = "请输入身高和体重后点击“计算 BMI”。结果仅作为健康参考，不作为医学诊断。";
+      document.getElementById("error").style.display = "none";
+    }
+
+    function fillSample(height, weight) {
+      document.getElementById("height").value = height;
+      document.getElementById("weight").value = weight;
+      calculateBMI();
+    }
+  </script>
+</body>
+</html>
